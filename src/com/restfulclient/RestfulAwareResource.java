@@ -1,6 +1,7 @@
 package com.restfulclient;
 
 
+// todo: distinction between resource and entity
 public abstract class RestfulAwareResource {
 
     private String uri = null;

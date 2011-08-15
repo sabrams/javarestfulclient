@@ -1,4 +1,4 @@
-package com.restfulclient.test;
+package com.restfulclient.test.mock;
 
 import com.restfulclient.RestfulAwareResource;
 

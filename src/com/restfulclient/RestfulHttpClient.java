@@ -2,81 +2,112 @@ package com.restfulclient;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.restfulclient.exception.ResourceDeserializationException;
 import com.restfulclient.exception.ResourceNotRegisteredException;
 import com.restfulclient.exception.ResourceRequestCreationException;
-import com.restfulclient.exception.ResourceUriUnknownException;
-import com.restfulclient.restrequestfactory.HttpResourceRequestFactory;
+import com.restfulclient.exception.ResourceUriInvalidException;
+import com.restfulclient.serialization.EntitySerializer;
 
-public class RestfulHttpClient {
+public class RestfulHttpClient implements RestfulClient<RestfulAwareResource> {
 
-    HttpClient httpclient = new DefaultHttpClient();
+    HttpClient httpClient = new DefaultHttpClient();
 
-    Map<Class<? extends RestfulAwareResource>, HttpResourceRequestFactory<? extends RestfulAwareResource>> restfulResourceMap = new HashMap<Class<? extends RestfulAwareResource>, HttpResourceRequestFactory<? extends RestfulAwareResource>>();
+    EntitySerializer serializer;
 
-    Class<? extends HttpResourceRequestFactory<?>> factoryClass;
-
-    private String host;
-    private String port;
-
-    public RestfulHttpClient(String host, String port) {
-	this.host = host;
-	this.port = port;
+    public void setSerializer(EntitySerializer serializer) {
+        this.serializer = serializer;
     }
 
     public void setHttpClient(HttpClient httpClient) {
-	this.httpclient = httpClient;
+        this.httpClient = httpClient;
     }
 
-    // public abstract void registerRestfulAwareResources();
+    @Override
+    public RestfulAwareResource get(Class<? extends RestfulAwareResource> clazz)
+            throws ResourceUriInvalidException,
+            ResourceRequestCreationException, ResourceDeserializationException,
+            ResourceNotRegisteredException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-//    public void registerResource(Class<? extends RestfulAwareResource> clazz, HttpResourceRequestFactory<? extends RestfulAwareResource> factory) {
-//	factory.setHost(this.host);
-//	factory.setPort(this.port);
-//	restfulResourceMap.put(clazz, factory);
-//    }
+    @Override
+    public RestfulAwareResource get(RestfulAwareResource resource)
+            throws ResourceUriInvalidException,
+            ResourceRequestCreationException, ResourceDeserializationException,
+            ResourceNotRegisteredException, IOException {
 
-    public <T extends RestfulAwareResource> RestfulAwareResource get(RestfulAwareResource resource) throws ResourceUriUnknownException,
-	    ResourceRequestCreationException, ResourceDeserializationException, ResourceNotRegisteredException {
-	if (resource.getUri() == null)
-	    throw new ResourceUriUnknownException();
+        HttpResponse httpResponse = null;
+        // TODO better validation in http context
+        if (resource.getUri() == null)
+            throw new ResourceUriInvalidException();
 
-	HttpResourceRequestFactory<? extends RestfulAwareResource> factory = restfulResourceMap.get(resource.getClass());
-	if (factory == null) {
-	    throw new ResourceNotRegisteredException(resource.getClass() + " has not been registered through 'registerResource'");
-	}
-	HttpGet getRequest = factory.createReadResourceRequest(resource);
-	InputStream is = execute(getRequest);
-//	return factory.deserializeResource(is, resource.getClass());
+        HttpGet getMethod = new HttpGet(resource.getUri());
+        try {
+            httpResponse = httpClient.execute(getMethod);
+        } catch (ClientProtocolException e) {
+            // TODO When does this happen? is the invalid URI case covered here?
+            // (hence omit top "throws")
+            e.printStackTrace();
+        }
+
+        return serializer.deserialize(httpResponse.getEntity().getContent());
+
+    }
+
+    @Override
+    public void put(RestfulAwareResource resource)
+            throws ResourceUriInvalidException,
+            ResourceRequestCreationException, ResourceDeserializationException,
+            ResourceNotRegisteredException {
+        HttpPut putMethod = new HttpPut(resource.getUri());
+        // putMethod.getEntity().getContentEncoding().get
+
+    }
+
+    @Override
+    public void delete(RestfulAwareResource resource)
+            throws ResourceUriInvalidException,
+            ResourceRequestCreationException, ResourceDeserializationException,
+            ResourceNotRegisteredException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void post(RestfulAwareResource resource)
+            throws ResourceUriInvalidException,
+            ResourceRequestCreationException, ResourceDeserializationException,
+            ResourceNotRegisteredException {
+        // TODO Auto-generated method stub
 
     }
 
     private InputStream execute(HttpGet getRequest) {
-	try {
-	    HttpResponse response = httpclient.execute(getRequest);
-	    HttpEntity entity = response.getEntity();
-	    if (entity != null) {
-		return entity.getContent();
-	    }
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                return entity.getContent();
+            }
 
-	} catch (ClientProtocolException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	} catch (IOException e) {
-	    // TODO Auto-generated catch block
-	    e.printStackTrace();
-	}
-	return null;
+        } catch (ClientProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
 
     }
 
