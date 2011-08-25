@@ -2,7 +2,30 @@ package com.restfulclient;
 
 
 // todo: distinction between resource and entity
+
+/**
+ * Extension of this class and exclusive usage of its methods during interactions with servers
+ * will enforce the RESTful principal of 
+ * 
+ * 
+ * From Roy Fielding's dissertation:
+ * 
+ * Table 5-1. REST Data Elements
+ * Data Element | Modern Web Examples
+ * -----------------------------------
+ * resource | the intended conceptual target of a hypertext reference
+ * resource identifier  | URL, URN
+ * representation   | HTML document, JPEG image
+ * representation metadata  | media type, last-modified time
+ * resource metadata    | source link, alternates, vary
+ * control data | if-modified-since, cache-control
+ * 
+ * @author stephenabrams
+ *
+ */
 public abstract class RestfulAwareResource {
+    
+    // do available content types need to be here?
 
     private String uri = null;
     private RestfulAwareResource parent = null;
@@ -62,6 +85,7 @@ public abstract class RestfulAwareResource {
 	    return false;
 	return true;
     }
+    
     
     
     

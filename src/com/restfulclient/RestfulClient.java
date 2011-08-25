@@ -11,8 +11,8 @@ import com.restfulclient.exception.ResourceUriInvalidException;
  * 
  * @author stephenabrams
  * 
- *         Implementations of this interface will run RESTful methods
- *         get/post/delete/put resources. Any failures to execute these methods
+ *         Strict adherence to this interface will enforce RESTful methods/verbs:
+ *         get/post/delete/put. Any failures to execute these methods
  *         should throw an appropriate exception
  * 
  * @param <T extends {@link RestfulAwareResource}>

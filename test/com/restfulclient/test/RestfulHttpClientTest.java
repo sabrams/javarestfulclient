@@ -36,7 +36,8 @@ public class RestfulHttpClientTest extends TestCase {
 
     MockHttpClient mockHttpClient;
 
-    MockSerializer mockSerializer;
+    // don't need, is 
+//    MockSerializer mockSerializer;
 
     MockHttpEntity mockHttpEntity;
 
@@ -51,6 +52,7 @@ public class RestfulHttpClientTest extends TestCase {
 
         final MockBookRestfulAwareResource mockResource = new MockBookRestfulAwareResource(); // todo:
 
+        // The delegate HttpClient to configure the RestfulHttpClient with
         mockHttpClient = new MockHttpClient();
         mockSerializer = new MockSerializer();
         mockHttpEntity = new MockHttpEntity();
@@ -58,7 +60,7 @@ public class RestfulHttpClientTest extends TestCase {
         clientUnderTest = new RestfulHttpClient();
 
         clientUnderTest.setHttpClient(mockHttpClient);
-        clientUnderTest.setSerializer(mockSerializer);
+        // clientUnderTest.setSerializer(mockSerializer);
 
         httpStubResponse.setEntity(mockHttpEntity);
 
@@ -90,7 +92,7 @@ public class RestfulHttpClientTest extends TestCase {
                 mockReturnedContent);
         mockHttpEntity.setInputStreamStub(inputStreamStub);
 
-        // Do it, Doug!
+        // Do it
         RestfulAwareResource actualBook = clientUnderTest.get(book);
 
         // verify the external request
@@ -120,4 +122,8 @@ public class RestfulHttpClientTest extends TestCase {
          */
 
     }
+    //
+    // public void testPosPost() {
+    // clientUnderTest.post(resource)
+    // }
 }
