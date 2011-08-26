@@ -30,6 +30,7 @@ public abstract class RestfulAwareResource {
     private String uri = null;
     private RestfulAwareResource parent = null;
     private String topLevelUri = null;
+    private String contentType;
     public String getUri() {
         return uri;
     }
@@ -84,6 +85,13 @@ public abstract class RestfulAwareResource {
 	} else if (!uri.equals(other.uri))
 	    return false;
 	return true;
+    }
+    public String getContentType() {
+        return contentType;
+    }
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+        
     }
     
     

@@ -1,6 +1,9 @@
 package com.restfulclient;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -10,9 +13,12 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import com.restfulclient.entity.Entity;
+import com.restfulclient.entity.HttpEntity;
 import com.restfulclient.exception.ResourceDeserializationException;
 import com.restfulclient.exception.ResourceNotRegisteredException;
 import com.restfulclient.exception.ResourceRequestCreationException;
@@ -120,21 +126,19 @@ public class RestfulHttpClient implements RestfulClient<RestfulAwareResource> {
 
     private void populateEntityEnclosingMethod(RestfulAwareResource resource,
             HttpEntityEnclosingRequestBase request) {
-        Entity representation = entitySerializerFactory.serialize(resource);
         // maybe the right one is there, or maybe entity should be protocol
         // agnostic
         try {
-            org.apache.http.HttpEntity entity = new InputStreamEntity(
-                    representation.getContent(),
-                    representation.getContentLength());
-            request.setEntity(entity);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            entitySerializerFactory.serialize(resource, os);
+
+            org.apache.http.HttpEntity httpEntity = new ByteArrayEntity(
+                    os.toByteArray());
+            request.setEntity(httpEntity);
         } catch (IllegalStateException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } // charset TODO
+        }
     }
 
     private HttpResponse executeMethod(HttpRequestBase method) {

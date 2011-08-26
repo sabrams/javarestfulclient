@@ -9,8 +9,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.restfulclient.Entity;
-import com.restfulclient.RestfulAwareResource;
+import com.restfulclient.RestfulAwareResource; 
+import com.restfulclient.entity.Entity;
 import com.restfulclient.exception.ResourceDeserializationException;
 import com.restfulclient.exception.ResourceSerializationException;
 
